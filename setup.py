@@ -1,8 +1,7 @@
 """Build script for setuptools, used to create PyPi package."""
 import os
 
-from setuptools import setup
-from setuptools import find_packages
+from setuptools import find_packages, setup
 
 from prometheus_speedtest import version
 
@@ -16,6 +15,7 @@ def read_file(rel_path):
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, rel_path), 'r') as rel_file:
         return rel_file.read().strip()
+
 
 setup(
     name='prometheus_speedtest',
@@ -43,10 +43,10 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     install_requires=[
-        'absl-py==0.7.1',
-        'mock==3.0.5',
+        'absl-py==0.9.0',
+        'mock==4.0.1',
         'prometheus_client==0.7.1',
-        'speedtest-cli==2.1.1',
+        'speedtest-cli==2.1.2',
     ],
     keywords=['prometheus', 'monitoring', 'speedtest', 'speedtest.net'],
     license='Apache License, Version 2.0',

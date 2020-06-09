@@ -1,28 +1,30 @@
 #!/usr/bin/python3.7
 """Instrument speedtest.net speedtests from Prometheus."""
 
+import os
 from http import server
 from urllib.parse import urlparse
-import os
 
-from absl import app
-from absl import flags
-from absl import logging
-from prometheus_client import core
 import prometheus_client
 import speedtest
-
+from absl import app, flags, logging
+from prometheus_client import core
 from prometheus_speedtest import version
 
 flags.DEFINE_string('address', '0.0.0.0', 'address to listen on')
 flags.DEFINE_integer('port', 9516, 'port to listen on')
-flags.DEFINE_list('servers', None, 'speedtest server(s) to use - leave empty for auto-selection')
+flags.DEFINE_list(
+    'servers',
+    None,
+    'speedtest server(s) to use - leave empty for auto-selection'
+)
 flags.DEFINE_boolean('version', False, 'show version')
 FLAGS = flags.FLAGS
 
 
 class PrometheusSpeedtest():
     """Enapsulates behavior performing and reporting results of speedtests."""
+
     def __init__(self, source_address=None, timeout=10, servers=None):
         """Instantiates a PrometheusSpeedtest object.
 
@@ -54,6 +56,7 @@ class PrometheusSpeedtest():
 
 class SpeedtestCollector():
     """Performs Speedtests when requested from Prometheus."""
+
     def __init__(self, tester=None, servers=None):
         """Instantiates a SpeedtestCollector object.
 
@@ -61,7 +64,8 @@ class SpeedtestCollector():
             tester: An instantiated PrometheusSpeedtest object for testing.
             servers: servers-id to use when tester is auto-created
         """
-        self._tester = tester if tester else PrometheusSpeedtest(servers=servers)
+        self._tester = tester if tester else PrometheusSpeedtest(
+            servers=servers)
 
     def collect(self):
         """Performs a Speedtests and yields metrics.
@@ -99,6 +103,7 @@ class SpeedtestCollector():
 class SpeedtestMetricsHandler(server.SimpleHTTPRequestHandler,
                               prometheus_client.MetricsHandler):
     """HTTP handler extending MetricsHandler and adding status page support."""
+
     def __init__(self, *args, **kwargs):
         static_directory = os.path.join(os.path.dirname(__file__), 'static')
         super(SpeedtestMetricsHandler,
@@ -131,8 +136,9 @@ def main(argv):
     http = server.ThreadingHTTPServer((FLAGS.address, FLAGS.port),
                                       metrics_handler)
 
-    logging.info('Starting HTTP server listening on %s:%s', FLAGS.address,
-                 FLAGS.port)
+    logging.info('Starting HTTP server listening on %s:%s'.format(
+        FLAGS.address, FLAGS.port
+    ))
     http.serve_forever()
 
 
